@@ -4,6 +4,8 @@ Fase 1 (esta): reglas simples y faciles de depurar.
 Fase 2 (luego): darle al LLM la lista de herramientas para que decida.
 """
 import asyncio
+import json
+import os
 import sys
 from pathlib import Path
 
@@ -41,8 +43,25 @@ def plan_por_reglas(caso: dict) -> list[dict]:
     return [sheet()]
 
 
+def _leer_resultado(r) -> dict:
+    """Extrae el dict que devolvio la herramienta (viene como texto JSON en content)."""
+    if getattr(r, "structured_content", None):
+        return dict(r.structured_content)
+    for bloque in getattr(r, "content", []) or []:
+        texto = getattr(bloque, "text", None)
+        if texto:
+            try:
+                dato = json.loads(texto)
+                return dato if isinstance(dato, dict) else {"valor": dato}
+            except json.JSONDecodeError:
+                return {"texto": texto}
+    return {}
+
+
 async def _ejecutar_async(plan: list[dict]) -> list[dict]:
-    params = StdioServerParameters(command=sys.executable, args=[str(SERVIDOR_MCP)])
+    # El subproceso recibe un entorno minimo; solo reenviamos lo que hace falta.
+    env = {k: os.environ[k] for k in ("MODO_PRUEBA",) if k in os.environ}
+    params = StdioServerParameters(command=sys.executable, args=[str(SERVIDOR_MCP)], env=env)
     resultados = []
     async with stdio_client(params) as (leer, escribir):
         async with ClientSession(leer, escribir) as sesion:
@@ -50,9 +69,12 @@ async def _ejecutar_async(plan: list[dict]) -> list[dict]:
             for paso in plan:
                 try:
                     r = await sesion.call_tool(paso["herramienta"], paso["args"])
-                    ok = not r.is_error if hasattr(r, "is_error") else not getattr(r, "isError", False)
-                    resultados.append({"herramienta": paso["herramienta"], "ok": ok,
-                                       "resultado": r.structured_content if getattr(r, "structured_content", None) else None})
+                    datos = _leer_resultado(r)
+                    ok = (not r.is_error) and datos.get("ok", True) is not False
+                    entrada = {"herramienta": paso["herramienta"], "ok": ok, "resultado": datos}
+                    if not ok:
+                        entrada["error"] = datos.get("error", "la herramienta devolvio un error")
+                    resultados.append(entrada)
                 except Exception as e:  # una herramienta que falla no debe tumbar las demas
                     resultados.append({"herramienta": paso["herramienta"], "ok": False, "error": str(e)})
     return resultados

@@ -8,6 +8,7 @@ from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(RAIZ / "api"))
+os.environ["MODO_PRUEBA"] = "1"  # nunca enviar avisos reales desde los tests
 os.environ["API_TOKEN"] = "token-de-prueba"
 os.environ.setdefault("GEMINI_API_KEY", "falsa-para-pruebas")
 

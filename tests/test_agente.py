@@ -3,8 +3,11 @@
 Uso (desde la raiz del repo):  python tests/test_agente.py   (o: pytest tests)
 No llama al LLM: usa casos ya clasificados.
 """
+import os
 import sys
 from pathlib import Path
+
+os.environ["MODO_PRUEBA"] = "1"  # nunca enviar avisos reales desde los tests
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "api"))
 
