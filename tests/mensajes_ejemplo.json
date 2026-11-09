@@ -1,14 +1,62 @@
 [
-  {"mensaje": "Hola, soy Ana de Textiles Sol. Se cayó nuestra facturación y necesitamos solución hoy.", "tipo": "soporte", "urgencia": "alta"},
-  {"mensaje": "Buenas, quisiera una cotización para automatizar el envío de nuestras facturas por correo. Somos una empresa de 20 personas.", "tipo": "cotizacion", "urgencia": "baja"},
-  {"mensaje": "Necesito presupuesto para conectar mi tienda online con mi sistema de inventario. Lo necesitamos antes del viernes para el cierre del trimestre.", "tipo": "cotizacion", "urgencia": "alta"},
-  {"mensaje": "Es la tercera vez que me cobran de más y nadie responde mis correos. Estoy muy molesto con el servicio.", "tipo": "queja", "urgencia": "media"},
-  {"mensaje": "Pésima atención. Pedí un reembolso hace un mes y sigo esperando. Voy a reclamar en el libro de reclamaciones.", "tipo": "queja", "urgencia": "alta"},
-  {"mensaje": "No puedo iniciar sesión en el panel desde ayer, me dice contraseña incorrecta aunque la restablecí.", "tipo": "soporte", "urgencia": "media"},
-  {"mensaje": "El reporte mensual sale con las columnas desordenadas, no es urgente pero convendría revisarlo.", "tipo": "soporte", "urgencia": "baja"},
-  {"mensaje": "Hola, ¿trabajan con integraciones de WhatsApp? Solo quiero saber si es posible.", "tipo": "consulta", "urgencia": "baja"},
-  {"mensaje": "¿Cuáles son sus horarios de atención y si ofrecen reuniones por videollamada?", "tipo": "consulta", "urgencia": "baja"},
-  {"mensaje": "GANA DINERO RÁPIDO desde casa!!! Haz clic aquí y multiplica tu inversión en 24 horas.", "tipo": "spam", "urgencia": "baja"},
-  {"mensaje": "Ofrecemos posicionamiento SEO garantizado en primera página de Google. Responda para recibir nuestra oferta especial.", "tipo": "spam", "urgencia": "baja"},
-  {"mensaje": "Nuestro sistema de pedidos está caído y no podemos despachar nada. Necesitamos ayuda inmediata, estamos perdiendo ventas.", "tipo": "soporte", "urgencia": "alta"}
+  {
+    "mensaje": "Hola, soy Ana de Textiles Sol. Se cayó nuestra facturación y necesitamos solución hoy.",
+    "tipo": "soporte",
+    "urgencia": "alta"
+  },
+  {
+    "mensaje": "Buenas, quisiera una cotización para automatizar el envío de nuestras facturas por correo. Somos una empresa de 20 personas.",
+    "tipo": "cotizacion",
+    "urgencia": "baja"
+  },
+  {
+    "mensaje": "Necesito presupuesto para conectar mi tienda online con mi sistema de inventario. Lo necesitamos antes del viernes para el cierre del trimestre.",
+    "tipo": "cotizacion",
+    "urgencia": "alta"
+  },
+  {
+    "mensaje": "Es la tercera vez que me cobran de más y nadie responde mis correos. Estoy muy molesto con el servicio.",
+    "tipo": "queja",
+    "urgencia": "media"
+  },
+  {
+    "mensaje": "Pésima atención. Pedí un reembolso hace un mes y sigo esperando. Voy a reclamar en el libro de reclamaciones.",
+    "tipo": "queja",
+    "urgencia": "alta"
+  },
+  {
+    "mensaje": "No puedo iniciar sesión en el panel desde ayer, me dice contraseña incorrecta aunque la restablecí.",
+    "tipo": "soporte",
+    "urgencia": "alta"
+  },
+  {
+    "mensaje": "El reporte mensual sale con las columnas desordenadas, no es urgente pero convendría revisarlo.",
+    "tipo": "soporte",
+    "urgencia": "baja"
+  },
+  {
+    "mensaje": "Hola, ¿trabajan con integraciones de WhatsApp? Solo quiero saber si es posible.",
+    "tipo": "consulta",
+    "urgencia": "baja"
+  },
+  {
+    "mensaje": "¿Cuáles son sus horarios de atención y si ofrecen reuniones por videollamada?",
+    "tipo": "consulta",
+    "urgencia": "baja"
+  },
+  {
+    "mensaje": "GANA DINERO RÁPIDO desde casa!!! Haz clic aquí y multiplica tu inversión en 24 horas.",
+    "tipo": "spam",
+    "urgencia": "baja"
+  },
+  {
+    "mensaje": "Ofrecemos posicionamiento SEO garantizado en primera página de Google. Responda para recibir nuestra oferta especial.",
+    "tipo": "spam",
+    "urgencia": "baja"
+  },
+  {
+    "mensaje": "Nuestro sistema de pedidos está caído y no podemos despachar nada. Necesitamos ayuda inmediata, estamos perdiendo ventas.",
+    "tipo": "soporte",
+    "urgencia": "alta"
+  }
 ]

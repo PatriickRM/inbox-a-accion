@@ -36,6 +36,7 @@ def _llamar_llm(mensaje: str, intentos: int = 5) -> str:
                     system_instruction=PROMPT,
                     response_mime_type="application/json",
                     max_output_tokens=1000,
+                    temperature=0,
                 ),
             )
             return (resp.text or "").strip()
@@ -63,4 +64,5 @@ def clasificar(mensaje: str, reintentos: int = 2) -> Caso:
 if __name__ == "__main__":
     prueba = "Hola, necesito una cotización para automatizar mi facturación."
     print(clasificar(prueba).model_dump_json(indent=2))
+
 
