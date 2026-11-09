@@ -5,11 +5,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, Header, HTTPException
+from fastapi import FastAPI, Header, HTTPException, Query
 from pydantic import BaseModel, Field
 
 load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
+import almacen  # noqa: E402
 from agente import ejecutar  # noqa: E402
 from clasificador import clasificar  # noqa: E402  (despues de cargar el .env)
 
@@ -18,7 +19,6 @@ if not TOKEN:
     raise RuntimeError("Falta API_TOKEN en el .env")
 
 app = FastAPI(title="Inbox a Acción")
-CASOS: list[dict] = []  # en memoria: se pierde al reiniciar. Luego va a Firestore.
 
 
 class Entrada(BaseModel):
@@ -60,11 +60,15 @@ def procesar(entrada: Entrada, x_api_token: str = Header(default="")):
     except Exception as e:
         registro["acciones"] = [{"herramienta": "agente", "ok": False, "error": str(e)}]
 
-    CASOS.append(registro)
+    almacen.guardar(registro)
     return registro
 
 
 @app.get("/casos")
-def listar_casos(x_api_token: str = Header(default="")):
+def listar_casos(
+    x_api_token: str = Header(default=""),
+    limite: int = Query(default=100, ge=1, le=500),
+    tipo: str | None = None,
+):
     verificar_token(x_api_token)
-    return CASOS
+    return almacen.listar(limite=limite, tipo=tipo)

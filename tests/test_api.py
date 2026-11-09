@@ -9,6 +9,8 @@ from pathlib import Path
 RAIZ = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(RAIZ / "api"))
 os.environ["MODO_PRUEBA"] = "1"  # nunca enviar avisos reales desde los tests
+import tempfile  # noqa: E402
+os.environ["DB_PATH"] = str(Path(tempfile.mkdtemp()) / "prueba.db")  # nunca tocar la base real
 os.environ["API_TOKEN"] = "token-de-prueba"
 os.environ.setdefault("GEMINI_API_KEY", "falsa-para-pruebas")
 
@@ -67,15 +69,24 @@ def test_casos_lista_lo_procesado():
     assert nuevo["id"] in [c["id"] for c in casos]
 
 
+def test_casos_filtra_por_tipo_y_respeta_limite():
+    cliente.post("/procesar", json={"mensaje": "Ganaste un premio"}, headers=H)
+    cliente.post("/procesar", json={"mensaje": "Necesito una cotizacion"}, headers=H)
+    solo_spam = cliente.get("/casos?tipo=spam", headers=H).json()
+    assert solo_spam and all(c["tipo"] == "spam" for c in solo_spam)
+    assert len(cliente.get("/casos?limite=1", headers=H).json()) == 1
+    assert cliente.get("/casos?limite=0", headers=H).status_code == 422
+
+
 def test_si_el_agente_falla_el_caso_se_guarda():
     original = main.ejecutar
     main.ejecutar = lambda caso: (_ for _ in ()).throw(RuntimeError("fallo simulado"))
     try:
-        antes = len(main.CASOS)
+        antes = len(cliente.get("/casos?limite=500", headers=H).json())
         r = cliente.post("/procesar", json={"mensaje": "Necesito una cotizacion"}, headers=H)
         assert r.status_code == 200
         assert r.json()["acciones"][0]["ok"] is False
-        assert len(main.CASOS) == antes + 1
+        assert len(cliente.get("/casos?limite=500", headers=H).json()) == antes + 1
     finally:
         main.ejecutar = original
 
