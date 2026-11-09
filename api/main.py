@@ -1,4 +1,4 @@
-﻿import hmac
+import hmac
 import os
 import uuid
 from datetime import datetime, timezone
@@ -10,6 +10,7 @@ from pydantic import BaseModel, Field
 
 load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
+from agente import ejecutar  # noqa: E402
 from clasificador import clasificar  # noqa: E402  (despues de cargar el .env)
 
 TOKEN = os.getenv("API_TOKEN")
@@ -52,8 +53,14 @@ def procesar(entrada: Entrada, x_api_token: str = Header(default="")):
         "origen": entrada.origen,
         "fecha": datetime.now(timezone.utc).isoformat(),
     }
+    # El agente ejecuta las herramientas MCP segun el caso. Si falla, el caso
+    # igual se guarda: no perdemos el mensaje del cliente por un error de integracion.
+    try:
+        registro["acciones"] = ejecutar(registro)
+    except Exception as e:
+        registro["acciones"] = [{"herramienta": "agente", "ok": False, "error": str(e)}]
+
     CASOS.append(registro)
-    # Aqui el agente llamara a las herramientas MCP segun caso.tipo
     return registro
 
 
