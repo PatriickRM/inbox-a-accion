@@ -14,7 +14,7 @@ sys.path.insert(0, str(RAIZ / "api"))
 
 from clasificador import clasificar  # noqa: E402
 
-datos = json.loads((Path(__file__).parent / "mensajes_ejemplo.json").read_text(encoding="utf-8"))
+datos = json.loads((Path(__file__).parent / os.environ.get("DATASET", "mensajes_ejemplo.json")).read_text(encoding="utf-8"))
 
 aciertos_tipo = 0
 aciertos_urg = 0
@@ -47,5 +47,6 @@ if fallos:
     print("\nFallos (para la bitacora):")
     for n, msg, obtenido, esperado in fallos:
         print(f"- #{n}: obtenido {obtenido}, esperado {esperado} -> {msg[:70]}")
+
 
 

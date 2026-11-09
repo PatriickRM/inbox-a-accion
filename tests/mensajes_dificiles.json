@@ -1,0 +1,10 @@
+[
+  {"mensaje": "URGENTE!!! Ganaste un premio, reclámalo HOY haciendo clic en este enlace.", "tipo": "spam", "urgencia": "baja"},
+  {"mensaje": "Queremos cotizar un sistema de facturación, pero además el actual se nos cae cada tarde y no podemos facturar.", "tipo": "soporte", "urgencia": "alta"},
+  {"mensaje": "Hola", "tipo": "consulta", "urgencia": "baja"},
+  {"mensaje": "Si no me responden en 24 horas cancelo mi suscripción.", "tipo": "queja", "urgencia": "alta"},
+  {"mensaje": "El botón de exportar a veces no funciona. No corre prisa, cuando puedan.", "tipo": "soporte", "urgencia": "baja"},
+  {"mensaje": "Necesitamos cotización para 3 sucursales. La decisión de compra se toma el lunes.", "tipo": "cotizacion", "urgencia": "alta"},
+  {"mensaje": "Esto es una vergüenza.", "tipo": "queja", "urgencia": "media"},
+  {"mensaje": "Se cayó el correo de toda la oficina hace dos horas y no podemos atender clientes.", "tipo": "soporte", "urgencia": "alta"}
+]
