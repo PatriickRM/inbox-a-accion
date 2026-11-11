@@ -20,8 +20,8 @@ mensaje ──▶ API (FastAPI) ──▶ clasificador (Gemini) ──▶ agente
 - [x] Panel en React
 - [ ] `registrar_en_sheet` real (hoy simulado)
 - [ ] `crear_tarea` real (hoy simulado)
-- [ ] Flujo en n8n (entrada automática desde Gmail)
-- [ ] Agente que decide con el LLM, en lugar de reglas fijas
+- [x] Flujo en n8n: correo a la API (probado con un correo de ejemplo; la lectura de Gmail por IMAP aún no está probada)
+- [x] Agente que decide con el LLM (Gemini propone, los guardarraíles filtran y las reglas son el respaldo)
 - [ ] Despliegue en Cloud Run (con Firestore en lugar de SQLite)
 
 ## Reglas del agente
@@ -34,6 +34,8 @@ mensaje ──▶ API (FastAPI) ──▶ clasificador (Gemini) ──▶ agente
 | Cualquier otro | Registra en la hoja |
 
 Si una herramienta falla, el caso igualmente se guarda con el error en `acciones`.
+
+Con `AGENTE_MODO=llm`, Gemini propone el plan y unos guardarraíles lo filtran: el spam nunca ejecuta herramientas, solo se aceptan las herramientas declaradas con argumentos válidos y un problema urgente siempre avisa al equipo. Si Gemini falla, se usan las reglas. Cada acción indica en `planificador` quién la decidió.
 
 ## Requisitos
 
@@ -58,6 +60,7 @@ Edita `.env` con tus valores:
 | `GEMINI_API_KEY` | Clave de Google AI Studio |
 | `MODELO_LLM` | Nombre del modelo (cambia con el tiempo; si da 404, mira el vigente en AI Studio) |
 | `PROMPT_VERSION` | Versión del prompt a usar (`v1`, `v2`, `v3`) |
+| `AGENTE_MODO` | `reglas` (por defecto) o `llm`: quién decide qué herramientas ejecutar |
 | `API_TOKEN` | Token que protege la API. Genera uno largo, por ejemplo con `python -c "import secrets; print(secrets.token_urlsafe(32))"` |
 | `TELEGRAM_BOT_TOKEN` | Token del bot, de @BotFather (opcional) |
 | `TELEGRAM_CHAT_ID` | Chat que recibe los avisos (opcional) |
@@ -112,6 +115,7 @@ python tests\test_almacen.py
 python tests\test_agente.py
 python tests\test_api.py
 python tests\test_telegram.py
+python tests\test_agente_llm.py
 ```
 
 ## Evaluar el prompt
@@ -124,6 +128,14 @@ python tests\evaluar.py
 ```
 
 Para otro dataset: `$env:DATASET="mensajes_dificiles.json"`. Los resultados de cada versión, lo que falló y lo que se cambió están en la [bitácora](docs/bitacora.md).
+
+## Evaluar el agente
+
+Compara el plan de Gemini con el de las reglas, sin ejecutar ninguna herramienta (una llamada a Gemini por mensaje que no sea spam):
+
+```powershell
+python tests\evaluar_agente.py
+```
 
 ## Estructura
 
