@@ -1,0 +1,113 @@
+{
+  "name": "Inbox a Accion - PRUEBA manual",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "n-manual",
+      "name": "Ejecutar prueba",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: {\n  from: \"Luis Pérez <luis@ferreterianorte.example>\",\n  subject: \"Cotización de facturación\",\n  textPlain: \"Hola, soy Luis de Ferretería Norte.\\n\\nNecesito una cotización para automatizar mi facturación antes del viernes.\\n\\nSaludos\"\n}}];"
+      },
+      "id": "n-ej",
+      "name": "Correo de ejemplo",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        260,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Convierte el correo en el mensaje que espera la API (/procesar).\n// Funciona con los formatos \"simple\" y \"resolved\" del nodo de correo.\nconst salida = [];\n\nfor (const item of $input.all()) {\n  const j = item.json;\n\n  // Remitente: puede venir como texto o como objeto\n  let de = typeof j.from === \"string\" ? j.from : (j.from && (j.from.text || j.from.value?.[0]?.address)) || \"\";\n\n  // Cuerpo: prefiere texto plano; si solo hay HTML, le quita las etiquetas\n  let cuerpo = j.textPlain || j.text || \"\";\n  if (!cuerpo && (j.textHtml || j.html)) {\n    cuerpo = String(j.textHtml || j.html)\n      .replace(/<(style|script)[\\s\\S]*?<\\/\\1>/gi, \" \")\n      .replace(/<br\\s*\\/?>|<\\/p>|<\\/div>/gi, \"\\n\")\n      .replace(/<[^>]+>/g, \" \")\n      .replace(/&nbsp;/g, \" \").replace(/&amp;/g, \"&\").replace(/&lt;/g, \"<\").replace(/&gt;/g, \">\");\n  }\n  cuerpo = cuerpo.replace(/[ \\t]+/g, \" \").replace(/\\n{3,}/g, \"\\n\\n\").trim();\n\n  const asunto = (j.subject || \"\").trim();\n  if (!cuerpo && !asunto) continue; // correo vacío: no hay nada que clasificar\n\n  // La API acepta hasta 5000 caracteres: dejamos margen para el encabezado\n  const lineas = [];\n  if (de) lineas.push(`De: ${de}`);\n  if (asunto) lineas.push(`Asunto: ${asunto}`);\n  lineas.push(\"\", cuerpo.slice(0, 4500));\n  const mensaje = lineas.join(\"\\n\").trim();\n\n  salida.push({ json: { mensaje, origen: \"correo\" } });\n}\n\nreturn salida;\n"
+      },
+      "id": "n-codigo",
+      "name": "Preparar mensaje",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        520,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://127.0.0.1:8000/procesar",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ mensaje: $json.mensaje, origen: $json.origen }) }}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "id": "n-http",
+      "name": "Procesar en la API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        780,
+        0
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "cred-api",
+          "name": "API Inbox a Accion"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Ejecutar prueba": {
+      "main": [
+        [
+          {
+            "node": "Correo de ejemplo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Correo de ejemplo": {
+      "main": [
+        [
+          {
+            "node": "Preparar mensaje",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar mensaje": {
+      "main": [
+        [
+          {
+            "node": "Procesar en la API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "active": false,
+  "id": "wf-flujo_prueba"
+}
