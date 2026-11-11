@@ -24,3 +24,16 @@ Modelo: gemini-3.5-flash-lite | temperature=0
 - Fijé temperature=0 porque #6 oscilaba entre corridas.
 - No creé un v4 solo para arreglar #2: ajustar el prompt a un fallo suelto repetiría el error de v2.
 - Limitación: 20 mensajes son pocos. Falta probar casos de escalamiento (reclamos, denuncias, abogados), que es lo que v3 agrega y lo que menos se ha probado.
+
+## Agente con LLM (Gemini decide las herramientas)
+
+Modelo: gemini-3.5-flash-lite | 17 casos no spam (el spam es regla fija) | temperature=0
+
+Resultado: mismo conjunto de herramientas que las reglas 6/17. Guardarraíles intervinieron 0/17. Errores 0.
+
+- La decisión de notificar coincidió en 17/17.
+- 7 diferencias: en soporte y quejas de urgencia alta, Gemini además registra en la hoja. Las reglas no lo hacían: los casos más graves quedaban fuera del registro. Es un hueco de las reglas que el LLM dejó a la vista.
+- 4 diferencias: en soporte baja y queja media, Gemini además crea una tarea. Pendiente decidir si es deseable o ruido.
+- Gemini nunca hizo menos que las reglas.
+- Limitación: la evaluación compara qué herramientas elige, no sus argumentos (canal, prioridad). Los guardarraíles solo se han ejercitado con pruebas unitarias.
+- Las diferencias vienen en parte de mi prompt, que pide registrar todo caso consultable.
